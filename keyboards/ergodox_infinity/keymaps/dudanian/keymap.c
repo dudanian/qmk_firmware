@@ -1,16 +1,8 @@
 #include QMK_KEYBOARD_H
 #include "version.h"
 
-// Layers
-enum custom_layers {
-  DVORAK = 0,
-  QWERTY,
-  GAME,
-  NUMPAD,
-  SYMBOL,
-  ARROW,
-  LOCK,
-};
+// enum custom_layers;
+#include "layers.h"
 
 enum custom_keycodes {
   PLACEHOLDER = SAFE_RANGE, // can always be here
@@ -26,7 +18,7 @@ enum custom_keycodes {
 
 // Alias for layer transitions
 #define KL_QWER TOGGLE(QWERTY)
-#define KL_GAME TOGGLE(GAME)
+#define KL_GAME TOGGLE(GAMING)
 #define KL_NUM  TOGGLE(NUMPAD)
 #define KL_SYM  HOLD(SYMBOL)
 #define KL_ARR  HOLD(ARROW)
@@ -82,7 +74,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         // right hand
         _______, _______, _______, _______, _______, KC_MINS, _______,
         _______, KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS,
-		 KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+                 KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         _______, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _______,
                           _______, _______, _______, _______, _______,
         // right thumb
@@ -91,7 +83,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______,  _______
     ),
 
-[GAME] = LAYOUT_ergodox(
+[GAMING] = LAYOUT_ergodox(
         // left hand
         _______, _______, _______, _______, _______, _______, KC_6,
         _______, _______, _______, _______, _______, _______, KC_7,
@@ -211,65 +203,5 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,
         _______, _______,  _______
 ),
-
-};
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch (keycode) {
-    // dynamically generate these.
-    case EPRM:
-      if (record->event.pressed) {
-        eeconfig_init();
-      }
-      return false;
-      break;
-    case VRSN:
-      if (record->event.pressed) {
-        SEND_STRING (QMK_KEYBOARD "/" QMK_KEYMAP " @ " QMK_VERSION);
-      }
-      return false;
-      break;
-    case RGB_SLD:
-      if (record->event.pressed) {
-        #ifdef RGBLIGHT_ENABLE
-          rgblight_mode(1);
-        #endif
-      }
-      return false;
-      break;
-  }
-  return true;
-}
-
-// Runs just one time when the keyboard initializes.
-void matrix_init_user(void) {
-
-};
-
-
-// Runs constantly in the background, in a loop.
-void matrix_scan_user(void) {
-
-    ergodox_board_led_off();
-    ergodox_right_led_1_off();
-    ergodox_right_led_2_off();
-    ergodox_right_led_3_off();
-
-#if 0
-    uint8_t layer = biton32(layer_state);
-
-    switch (layer) {
-      // TODO: Make this relevant to the ErgoDox EZ.
-        case 1:
-            ergodox_right_led_1_on();
-            break;
-        case 2:
-            ergodox_right_led_2_on();
-            break;
-        default:
-            // none
-            break;
-    }
-#endif
 
 };
