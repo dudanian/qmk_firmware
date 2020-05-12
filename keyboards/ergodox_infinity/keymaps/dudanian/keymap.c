@@ -3,149 +3,241 @@
 #include "action_layer.h"
 #include "version.h"
 
-#define BASE 0 // default layer
-#define SYMB 1 // symbols
-#define MDIA 2 // media keys
+#define BASE 0
+#define SYMBOL 1
+#define NUMPAD 2 
+#define TMUX 3
+#define ARROW 4
 
+/* my keyboard layout
+ *
+ * There are a few important considerations for me:
+ *
+ * dvorak support (base layer)
+ * symbol keys (middle layer)
+ * arrow keys (topmost layer)
+ * macros
+ *   ctrl B (tmux)
+ *   ctrl alt t (terminal)
+ *   alt tab (maybe?)
+ *
+ * media keys
+ *
+ * don't EVER have keys greater than 7 chars
+ * create defines for complicated keys 'KD_'
+ */
 enum custom_keycodes {
   PLACEHOLDER = SAFE_RANGE, // can always be here
   EPRM,
   VRSN,
-  RGB_SLD
+  // custom tmux codes
+  KT_UP,
+  KT_DOWN,
+  KT_LEFT,
+  KT_RGHT,
+  KT_PREV,
+  KT_NEXT,
+
 };
+
+// base layers should have KC_NO
+#undef  _______
+#define _______ KC_NO
+
+// the original codes are confusting
+#define HOLD       MO
+#define TOGGLE     TG
+#define TAP_TOGGLE TT
+
+// TODO replace all base layer non-keys with something
+// KD_ or KL_ or KM_
+// TAP_TOGGLE is fun, but a little weird
+// maybe I'll play around with it more later
+//
+#define KL_ARR  HOLD(ARROW)
+#define KL_SYM  HOLD(SYMBOL)
+#define KL_NUM  TOGGLE(NUMPAD)
+#define KL_TMUX HOLD(TMUX)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* Keymap 0: Basic layer
  *
- * ,--------------------------------------------------.           ,--------------------------------------------------.
- * |   =    |   1  |   2  |   3  |   4  |   5  | LEFT |           | RIGHT|   6  |   7  |   8  |   9  |   0  |   -    |
- * |--------+------+------+------+------+-------------|           |------+------+------+------+------+------+--------|
- * | Del    |   Q  |   W  |   E  |   R  |   T  |  L1  |           |  L1  |   Y  |   U  |   I  |   O  |   P  |   \    |
- * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
- * | BkSp   |   A  |   S  |   D  |   F  |   G  |------|           |------|   H  |   J  |   K  |   L  |; / L2|' / Cmd |
- * |--------+------+------+------+------+------| Hyper|           | Meh  |------+------+------+------+------+--------|
- * | LShift |Z/Ctrl|   X  |   C  |   V  |   B  |      |           |      |   N  |   M  |   ,  |   .  |//Ctrl| RShift |
- * `--------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
- *   |Grv/L1|  '"  |AltShf| Left | Right|                                       |  Up  | Down |   [  |   ]  | ~L1  |
- *   `----------------------------------'                                       `----------------------------------'
- *                                        ,-------------.       ,-------------.
- *                                        | App  | LGui |       | Alt  |Ctrl/Esc|
- *                                 ,------|------|------|       |------+--------+------.
- *                                 |      |      | Home |       | PgUp |        |      |
- *                                 | Space|Backsp|------|       |------|  Tab   |Enter |
- *                                 |      |ace   | End  |       | PgDn |        |      |
- *                                 `--------------------'       `----------------------'
+ * For the most part this is a standard dvorak layout.
+ * The most interesting things are in the control keys
+ * and the thumb clusters
+ *
+ * things I like
+ * + and = are dedicated keys
+ * | and \ are dedicated keys
+ * 
+ * alt + tab and alt + grv mirror each other on other halves
+ * (well, almost. tab is still one row lower)
+ *
+ * layA - hold for arrows
+ * lay0/4 - press for lock arrows
+ * layS - hold for symbol layer
+ * lay2/3 - press for symbol key latch?
+ * layN -   currently numpad, could probably lock it
+ *          would very much like to cancel out of that
+ * layT
+ *
+ * it would be pretty cool if ESC cancelled current locked layer
+ * not sure if that is possible
+ *
+ *
+ *
  */
-// If it accepts an argument (i.e, is a function), it doesn't need KC_.
-// Otherwise, it needs KC_*
-[BASE] = LAYOUT_ergodox(  // layer 0 : default
+[BASE] = LAYOUT_ergodox(
         // left hand
-        KC_EQL,         KC_1,         KC_2,   KC_3,   KC_4,   KC_5,   KC_LEFT,
-        KC_DELT,        KC_Q,         KC_W,   KC_E,   KC_R,   KC_T,   TG(SYMB),
-        KC_BSPC,        KC_A,         KC_S,   KC_D,   KC_F,   KC_G,
-        KC_LSFT,        CTL_T(KC_Z),  KC_X,   KC_C,   KC_V,   KC_B,   ALL_T(KC_NO),
-        LT(SYMB,KC_GRV),KC_QUOT,      LALT(KC_LSFT),  KC_LEFT,KC_RGHT,
-                                              ALT_T(KC_APP),  KC_LGUI,
-                                                              KC_HOME,
-                                               KC_SPC,KC_BSPC,KC_END,
+        KC_ESC,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    _______,
+        KC_TAB,  KC_QUOT, KC_COMM, KC_DOT,  KC_P,    KC_Y,    KC_PLUS,
+        KC_LCTL, KC_A,    KC_O,    KC_E,    KC_U,    KC_I,
+        KC_LSFT, KC_SCLN, KC_Q,    KC_J,    KC_K,    KC_X,    KC_EQL,
+        _______, KC_LGUI, KC_LALT, KL_NUM,  KL_SYM,
+                                                         // left thumb
+                                                         // media keys
+                                                         // and enter
+                                                     KC_VOLD, KC_VOLU,
+                                                              KC_MPLY,
+                                            KC_ENT,  KL_ARR,  KL_TMUX,
+                                                      // maybe I can do some tmux hing?
+                                                      // ctrl b?
+                                                      // ooooh or a tmux layer!!!
+                                                      // where everything is a tmux shortcut
         // right hand
-             KC_RGHT,     KC_6,   KC_7,  KC_8,   KC_9,   KC_0,             KC_MINS,
-             TG(SYMB),    KC_Y,   KC_U,  KC_I,   KC_O,   KC_P,             KC_BSLS,
-                          KC_H,   KC_J,  KC_K,   KC_L,   LT(MDIA, KC_SCLN),GUI_T(KC_QUOT),
-             MEH_T(KC_NO),KC_N,   KC_M,  KC_COMM,KC_DOT, CTL_T(KC_SLSH),   KC_RSFT,
-                                  KC_UP, KC_DOWN,KC_LBRC,KC_RBRC,          KC_FN1,
-             KC_LALT,        CTL_T(KC_ESC),
-             KC_PGUP,
-             KC_PGDN,KC_TAB, KC_ENT
+        // I kind of want to try out the shifted top row..
+        KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    _______, KC_GRV,
+        // have forward and backslash on same row, on other ends
+        KC_BSLS, KC_F,    KC_G,    KC_C,    KC_R,    KC_L,    KC_SLSH,
+                 KC_D,    KC_H,    KC_T,    KC_N,    KC_S,    KC_MINS,
+        // pipe matters less, but follow the same pattern as +=
+        KC_PIPE, KC_B,    KC_M,    KC_W,    KC_V,    KC_Z,    KC_RSFT,
+                          KL_SYM,  KL_ARR,  KC_LALT, _______, _______,
+                                             // maybe I can make these alt ~?
+        // right thumb
+        _______, _______,
+        _______,
+        KL_TMUX, KC_BSPC, KC_SPC
     ),
+
+
+// non-base layers should have KC_TRNS
+#undef  _______
+#define _______ KC_TRNS
 /* Keymap 1: Symbol Layer
  *
- * ,---------------------------------------------------.           ,--------------------------------------------------.
- * |Version  |  F1  |  F2  |  F3  |  F4  |  F5  |      |           |      |  F6  |  F7  |  F8  |  F9  |  F10 |   F11  |
- * |---------+------+------+------+------+------+------|           |------+------+------+------+------+------+--------|
- * |         |   !  |   @  |   {  |   }  |   |  |      |           |      |   Up |   7  |   8  |   9  |   *  |   F12  |
- * |---------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
- * |         |   #  |   $  |   (  |   )  |   `  |------|           |------| Down |   4  |   5  |   6  |   +  |        |
- * |---------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
- * |         |   %  |   ^  |   [  |   ]  |   ~  |      |           |      |   &  |   1  |   2  |   3  |   \  |        |
- * `---------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
- *   | EPRM  |      |      |      |      |                                       |      |    . |   0  |   =  |      |
- *   `-----------------------------------'                                       `----------------------------------'
- *                                        ,-------------.       ,-------------.
- *                                        |Animat|      |       |Toggle|Solid |
- *                                 ,------|------|------|       |------+------+------.
- *                                 |Bright|Bright|      |       |      |Hue-  |Hue+  |
- *                                 |ness- |ness+ |------|       |------|      |      |
- *                                 |      |      |      |       |      |      |      |
- *                                 `--------------------'       `--------------------'
- */
-// SYMBOLS
-[SYMB] = LAYOUT_ergodox(
-       // left hand
-       VRSN,   KC_F1,  KC_F2,  KC_F3,  KC_F4,  KC_F5,  KC_TRNS,
-       KC_TRNS,KC_EXLM,KC_AT,  KC_LCBR,KC_RCBR,KC_PIPE,KC_TRNS,
-       KC_TRNS,KC_HASH,KC_DLR, KC_LPRN,KC_RPRN,KC_GRV,
-       KC_TRNS,KC_PERC,KC_CIRC,KC_LBRC,KC_RBRC,KC_TILD,KC_TRNS,
-          EPRM,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS,
-                                       RGB_MOD,KC_TRNS,
-                                               KC_TRNS,
-                               RGB_VAD,RGB_VAI,KC_TRNS,
-       // right hand
-       KC_TRNS, KC_F6,   KC_F7,  KC_F8,   KC_F9,   KC_F10,  KC_F11,
-       KC_TRNS, KC_UP,   KC_7,   KC_8,    KC_9,    KC_ASTR, KC_F12,
-                KC_DOWN, KC_4,   KC_5,    KC_6,    KC_PLUS, KC_TRNS,
-       KC_TRNS, KC_AMPR, KC_1,   KC_2,    KC_3,    KC_BSLS, KC_TRNS,
-                         KC_TRNS,KC_DOT,  KC_0,    KC_EQL,  KC_TRNS,
-       RGB_TOG, RGB_SLD,
-       KC_TRNS,
-       KC_TRNS, RGB_HUD, RGB_HUI
-),
-/* Keymap 2: Media and mouse keys
+ * This is a pretty straight forward layout. It adds the [] and {} keys
+ * that I'm missing on the base layer and mirrors them on both halves.
  *
- * ,--------------------------------------------------.           ,--------------------------------------------------.
- * |        |      |      |      |      |      |      |           |      |      |      |      |      |      |        |
- * |--------+------+------+------+------+-------------|           |------+------+------+------+------+------+--------|
- * |        |      |      | MsUp |      |      |      |           |      |      |      |      |      |      |        |
- * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
- * |        |      |MsLeft|MsDown|MsRght|      |------|           |------|      |      |      |      |      |  Play  |
- * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
- * |        |      |      |      |      |      |      |           |      |      |      | Prev | Next |      |        |
- * `--------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
- *   |      |      |      | Lclk | Rclk |                                       |VolUp |VolDn | Mute |      |      |
- *   `----------------------------------'                                       `----------------------------------'
- *                                        ,-------------.       ,-------------.
- *                                        |      |      |       |      |      |
- *                                 ,------|------|------|       |------+------+------.
- *                                 |      |      |      |       |      |      |Brwser|
- *                                 |      |      |------|       |------|      |Back  |
- *                                 |      |      |      |       |      |      |      |
- *                                 `--------------------'       `--------------------'
+ * It also pulls down the shift symbols from the number row to under
+ * the home row. For no particular reason. Note that the () are actually
+ * offset to match up with the brackets.
  */
-// MEDIA AND MOUSE
-[MDIA] = LAYOUT_ergodox(
-       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-       KC_TRNS, KC_TRNS, KC_TRNS, KC_MS_U, KC_TRNS, KC_TRNS, KC_TRNS,
-       KC_TRNS, KC_TRNS, KC_MS_L, KC_MS_D, KC_MS_R, KC_TRNS,
-       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-       KC_TRNS, KC_TRNS, KC_TRNS, KC_BTN1, KC_BTN2,
-                                           KC_TRNS, KC_TRNS,
-                                                    KC_TRNS,
-                                  KC_TRNS, KC_TRNS, KC_TRNS,
-    // right hand
-       KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-       KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-                 KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_MPLY,
-       KC_TRNS,  KC_TRNS, KC_TRNS, KC_MPRV, KC_MNXT, KC_TRNS, KC_TRNS,
-                          KC_VOLU, KC_VOLD, KC_MUTE, KC_TRNS, KC_TRNS,
-       KC_TRNS, KC_TRNS,
-       KC_TRNS,
-       KC_TRNS, KC_TRNS, KC_WBAK
+[SYMBOL] = LAYOUT_ergodox(
+        // left hand
+        _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   _______,
+        _______, _______, KC_LCBR, KC_RCBR, _______, _______, _______,
+        _______, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______,
+                                                         // left thumb
+                                                     _______, _______,
+                                                              _______,
+                                            _______, _______, _______,
+
+        // right hand
+        KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
+        _______, _______, _______, KC_LBRC, KC_RBRC, _______, _______,
+                 KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_CIRC, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+                          _______, _______, _______, _______, _______,
+        // right thumb
+        _______, _______,
+        _______,
+        _______, _______, _______
+),
+
+[NUMPAD] = LAYOUT_ergodox(
+        // left hand
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______,
+                                                         // left thumb
+                                                     _______, _______,
+                                                              _______,
+                                            _______, _______, _______,
+
+        // right hand
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, KC_7,    KC_8,    KC_9,    _______, _______,
+                 _______, KC_4,    KC_5,    KC_6,    _______, _______,
+        _______, _______, KC_1,    KC_2,    KC_3,    _______, _______,
+                          KC_0,    KC_0,    KC_DOT,  _______, _______,
+        // right thumb
+        _______, _______,
+        _______,
+        _______, _______, _______
+),
+
+[ARROW] = LAYOUT_ergodox(
+        // left hand
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______,
+                                                         // left thumb
+                                                     _______, _______,
+                                                              _______,
+                                            _______, _______, _______,
+
+        // right hand
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, KC_PGUP, KC_UP,   KC_PGDN, _______, _______,
+                 _______, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+                          _______, _______, _______, _______, _______,
+        // right thumb
+        _______, _______,
+        _______,
+        _______, KC_DEL,  _______
+),
+
+
+[TMUX] = LAYOUT_ergodox(
+        // left hand
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______,
+                                                         // left thumb
+                                                     _______, _______,
+                                                              _______,
+                                            _______, _______, _______,
+
+        // right hand
+        _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, KT_PREV, KT_UP,   KT_NEXT, _______, _______,
+                 _______, KT_LEFT, KT_DOWN, KT_RGHT, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
+                          _______, _______, _______, _______, _______,
+        // right thumb
+        _______, _______,
+        _______,
+        _______, _______, _______
 ),
 };
 
+// I don't think I need this?
+#if 0
 const uint16_t PROGMEM fn_actions[] = {
-    [1] = ACTION_LAYER_TAP_TOGGLE(SYMB)                // FN1 - Momentary Layer 1 (Symbols)
+    // wtf is this for??
+    [1] = ACTION_LAYER_TAP_TOGGLE(SYMBOL)                // FN1 - Momentary Layer 1 (Symbols)
 };
+#endif
 
 const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 {
@@ -180,11 +272,39 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-    case RGB_SLD:
+    case KT_UP:
       if (record->event.pressed) {
-        #ifdef RGBLIGHT_ENABLE
-          rgblight_mode(1);
-        #endif
+        SEND_STRING (SS_LCTRL("b") SS_TAP(X_UP));
+      }
+      return false;
+      break;
+    case KT_DOWN:
+      if (record->event.pressed) {
+        SEND_STRING (SS_LCTRL("b") SS_TAP(X_DOWN));
+      }
+      return false;
+      break;
+    case KT_LEFT:
+      if (record->event.pressed) {
+        SEND_STRING (SS_LCTRL("b") SS_TAP(X_LEFT));
+      }
+      return false;
+      break;
+    case KT_RGHT:
+      if (record->event.pressed) {
+        SEND_STRING (SS_LCTRL("b") SS_TAP(X_RIGHT));
+      }
+      return false;
+      break;
+    case KT_PREV:
+      if (record->event.pressed) {
+        SEND_STRING (SS_LCTRL("b") "p");
+      }
+      return false;
+      break;
+    case KT_NEXT:
+      if (record->event.pressed) {
+        SEND_STRING (SS_LCTRL("b") "n");
       }
       return false;
       break;
