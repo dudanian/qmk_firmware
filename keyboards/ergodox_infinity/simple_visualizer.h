@@ -28,6 +28,10 @@
 #error This visualizer needs that LCD is enabled
 #endif
 
+#ifndef SIMPLE_VISUALIZER_BACKLIGHT_BRIGHTNESS
+#define SIMPLE_VISUALIZER_BACKLIGHT_BRIGHTNESS 130
+#endif
+
 #include "visualizer.h"
 #include "visualizer_keyframes.h"
 #include "lcd_keyframes.h"
@@ -50,6 +54,15 @@ static keyframe_animation_t lcd_layer_display = {
     .frame_functions = {lcd_keyframe_display_layer_and_led_states}
 };
 
+#ifdef SIMPLE_VISUALIZER_IMMEDIATE_TRANSITION
+// The color animation animates the LCD color when you change layers
+static keyframe_animation_t color_animation = {
+    .num_frames = 1,
+    .loop = false,
+    .frame_lengths = {gfxMillisecondsToTicks(0)},
+    .frame_functions = {lcd_backlight_keyframe_set_color},
+};
+#else
 // The color animation animates the LCD color when you change layers
 static keyframe_animation_t color_animation = {
     .num_frames = 2,
@@ -60,11 +73,12 @@ static keyframe_animation_t color_animation = {
     .frame_lengths = {gfxMillisecondsToTicks(200), gfxMillisecondsToTicks(500)},
     .frame_functions = {keyframe_no_operation, lcd_backlight_keyframe_animate_color},
 };
+#endif
 
 void initialize_user_visualizer(visualizer_state_t* state) {
     // The brightness will be dynamically adjustable in the future
     // But for now, change it here.
-    lcd_backlight_brightness(130);
+    lcd_backlight_brightness(SIMPLE_VISUALIZER_BACKLIGHT_BRIGHTNESS);
     state->current_lcd_color = initial_color;
     state->target_lcd_color = logo_background_color;
     initial_update = true;
