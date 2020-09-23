@@ -1,4 +1,7 @@
-#!/bin/sh
+#!/bin/bash
+
+# exit when any command fails
+set -e
 
 # config for qmk
 KEYBOARD=ergodox_infinity
@@ -39,6 +42,7 @@ flash_image() {
 TARGET=${KEYBOARD}:${KEYMAP}
 IMAGE=${KEYBOARD}_${KEYMAP}.bin
 
+docker_make git-submodule
 docker_make $TARGET
 wait_for_bootloader
 flash_image $IMAGE
