@@ -22,7 +22,11 @@ enum custom_keycodes {
 #define KL_NUM  TOGGLE(NUMPAD)
 #define KL_SYM  HOLD(SYMBOL)
 #define KL_ARR  HOLD(ARROW)
+#define KL_ARRL TOGGLE(ARROW)
 #define KL_LOCK HOLD(LOCK)
+
+// Simple macros
+#define KM_LCA  LCTL(KC_LALT)
 
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -37,7 +41,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,  KC_QUOT, KC_COMM, KC_DOT,  KC_P,    KC_Y,    KC_PLUS,
         KC_LCTL, KC_A,    KC_O,    KC_E,    KC_U,    KC_I,
         KC_LSFT, KC_SCLN, KC_Q,    KC_J,    KC_K,    KC_X,    KC_EQL,
-        KC_LCTL, KC_LGUI, KC_LALT, KL_ARR,  KL_SYM,
+        KM_LCA,  KC_LGUI, KC_LALT, KL_ARR,  KL_SYM,
                                                          // left thumb
                                                      KC_VOLD, KC_VOLU,
                                                               KC_MPLY,
@@ -48,11 +52,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_BSLS, KC_F,    KC_G,    KC_C,    KC_R,    KC_L,    KC_SLSH,
                  KC_D,    KC_H,    KC_T,    KC_N,    KC_S,    KC_MINS,
         KC_PIPE, KC_B,    KC_M,    KC_W,    KC_V,    KC_Z,    KC_RSFT,
-                          KL_SYM,  KL_ARR,  KC_RALT, _______, KC_RCTL,
+                          KL_SYM,  KL_ARR,  KC_RALT, KL_ARRL, KC_RCTL,
         // right thumb
-        KL_LOCK, KC_DEL,
-        KC_HOME,
-        KC_END,  KC_BSPC, KC_SPC
+        KC_PGUP, KC_PGDN,
+        KC_LCTL,
+        KL_LOCK, KC_BSPC, KC_SPC
     ),
 
 // non-base layers should have KC_TRNS
@@ -89,7 +93,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______, _______, _______, _______, KC_7,
         _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______, KC_8,
-        _______, _______, _______, KC_LALT, KC_SPC,
+        KC_LCTL, _______, _______, KC_LALT, KC_SPC,
                                                          // left thumb
                                                      KC_F1,   KC_F2,
                                                               KC_F3,
@@ -102,7 +106,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______, _______, _______, _______, _______,
                           _______, _______, _______, _______, _______,
         // right thumb
-        _______, _______,
+        KC_VOLD, KC_VOLU,
         _______,
         _______, _______,  _______
 ),
@@ -140,7 +144,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______,
                                                          // left thumb
-                                                     _______, _______,
+                                                     KC_MNXT, KC_MPRV,
                                                               _______,
                                             _______, _______, _______,
 
@@ -171,8 +175,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         // right hand
         _______, _______, _______, _______, _______, _______, _______,
         _______, _______, KC_PGUP, KC_UP,   KC_PGDN, _______, _______,
-                 _______, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,
-        _______, _______, _______, _______, _______, _______, _______,
+                 KC_HOME, KC_LEFT, KC_DOWN, KC_RGHT, KC_END,  _______,
+        _______, _______, KC_HOME, _______, KC_END,  _______, _______,
                           _______, _______, _______, _______, _______,
         // right thumb
         _______, _______,
@@ -182,7 +186,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 [LOCK] = LAYOUT_ergodox(
         // left hand
-        _______, KL_QWER, KL_GAME, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______, _______,
@@ -193,15 +197,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                             _______, _______, _______,
 
         // right hand
-        _______, KL_NUM,  KC_INS,  KC_PSCR, KC_SLCK, KC_PAUS, _______,
+        _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______, _______,
                  _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______, _______,
-                          _______, _______, _______, _______, _______,
+                          KC_PSCR, KC_SLCK, KC_PAUS, _______, _______,
         // right thumb
-        _______, _______,
-        _______,
-        _______, _______,  _______
+        KL_QWER, KL_GAME,
+        KL_NUM,
+        _______, _______, _______
 ),
 
 };

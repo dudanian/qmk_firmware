@@ -40,6 +40,7 @@ static void get_visualizer_layer_and_color(visualizer_state_t* state) {
       break;
     case ARROW:
       state->layer_text = "ARROW";
+      state->target_lcd_color = HSV_COLOR(HSV_YELLOW);
       break;
     case LOCK:
       state->layer_text = "LOCK";
