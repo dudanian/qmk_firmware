@@ -29,11 +29,11 @@ static void get_visualizer_layer_and_color(visualizer_state_t* state) {
       break;
     case GAMING:
       state->layer_text = "GAMING";
-      state->target_lcd_color = HSV_COLOR(HSV_GREEN);
+      state->target_lcd_color = HSV_COLOR(HSV_ORANGE);
       break;
     case NUMPAD:
       state->layer_text = "NUMPAD";
-      state->target_lcd_color = HSV_COLOR(HSV_ORANGE);
+      state->target_lcd_color = HSV_COLOR(HSV_GOLD);
       break;
     case SYMBOL:
       state->layer_text = "SYMBOL";
